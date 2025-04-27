@@ -1,40 +1,78 @@
-# Dockerizing-Prometheus
-In this tutorial we will learn how to dockerize prometheus
+# Dockerizing Prometheus
 
-# Dockerfile Usage
+This tutorial explains how to dockerize Prometheus, a powerful monitoring and alerting toolkit.
 
-We will use ubuntu latest as base image
-We will use Arg as an argument to avoid installation prompts
-We will install required packages
-We will also clean the packages to save space
-We will download and extract prometheus 2.53.1
-Move Prometheus to /usr/local/prometheus and remove the tar.gz file.
-Copy prometheus.yml to the container and expose Prometheus on port 9090.
-Set the command to start Prometheus with the given configuration file.
+---
 
-# Prometheus yaml file usage
+## Dockerfile Overview
 
-We are scraping metrics for every 15s under global section which means prometheus will collect target metrics every 15s.
-Under scrape_configs prometheus will scrape metrics from localhost:9090, it means prometheus is scraping on it's own.
-In order to scrape different services you can another job_name and target URLs under the scrape_configs.
+The `Dockerfile` is designed to:
+1. Use the latest Ubuntu image as the base.
+2. Avoid interactive prompts during package installation using the `ARG DEBIAN_FRONTEND=noninteractive`.
+3. Install required packages like `wget` and `curl`.
+4. Clean up unnecessary files to save space.
+5. Download and extract Prometheus version `2.53.1`.
+6. Move Prometheus to `/usr/local/prometheus` and remove the downloaded tarball.
+7. Copy the `prometheus.yml` configuration file into the container.
+8. Expose Prometheus on port `9090`.
+9. Start Prometheus with the specified configuration file.
 
-# Build Docker Image
+---
+
+## Prometheus Configuration (`prometheus.yml`)
+
+- **Global Settings**: 
+  - Metrics are scraped every `15 seconds` as defined in the `scrape_interval`.
+  
+- **Scrape Configurations**:
+  - Prometheus scrapes metrics from `localhost:9090`, which means it is scraping its own metrics.
+  - To scrape additional services, you can add more `job_name` entries and specify their target URLs under `scrape_configs`.
+
+---
+
+## Build the Docker Image
+
+To build the Docker image, run the following command:
 
 ```bash
-    sudo docker build -t prometheus:1.0.0 .
+sudo docker build -t prometheus:1.0.0 .
 ```
-# Verify the docker image
+
+---
+
+## Verify the Docker Image
+
+After building the image, verify it using:
 
 ```bash
-    sudo docker images
+sudo docker images
 ```
 
-# Run the image to create a container
+---
+
+## Run the Docker Container
+
+To create and run a container from the image, use:
 
 ```bash
-    sudo docker run -p 9090:9090 prometheus:1.0.0
+sudo docker run -p 9090:9090 prometheus:1.0.0
 ```
 
-# Access Prometheus 
+---
 
-After running the above command, access Prometheus UI in the browser using the URL localhost:9090, you can see the following	  
+## Access Prometheus
+
+Once the container is running, you can access the Prometheus UI in your browser at:
+
+```
+http://localhost:9090
+```
+
+You should see the Prometheus dashboard.
+
+---
+
+## Notes
+
+- To monitor additional services, update the `prometheus.yml` file with new `job_name` and `targets`.
+- Ensure that the services you want to monitor are accessible from the container.
